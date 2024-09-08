@@ -1,14 +1,12 @@
 class ServicoCalculoFatura {
-    constructor(){}
-
-    getPeca(apresentacao, pecas) {
-        return pecas[apresentacao.id];
-    }
+    constructor(repo) {
+        this.repo = repo;
+     }
     
-    calcularTotalApresentacao(apre, pecas) {
+    calcularTotalApresentacao(apre) {
         let total = 0;
       
-        switch (this.getPeca(apre, pecas).tipo) {
+        switch (this.repo.getPeca(apre).tipo) {
           case "tragedia":
             total = 40000;
             if (apre.audiencia > 30) {
@@ -23,34 +21,34 @@ class ServicoCalculoFatura {
             total += 300 * apre.audiencia;
             break;
           default:
-              throw new Error(`Peça desconhecia: ${getPeca(apre, pecas).tipo}`);
+              throw new Error(`Peça desconhecia: ${this.repo.getPeca(apre).tipo}`);
         }
       
         return total
       }
       
-    calcularTotalFatura(apresentacoes, pecas){
+    calcularTotalFatura(apresentacoes){
         let fatura = 0
         for (let apre of apresentacoes) {
-            fatura+=this.calcularTotalApresentacao(apre, pecas)
+            fatura+=this.calcularTotalApresentacao(apre)
         }
       
         return fatura
       }
       
-    calcularTotalCreditos(apresentacoes, pecas){
+    calcularTotalCreditos(apresentacoes){
         let creditos = 0
         for (let apre of apresentacoes) {
-            creditos+=this.calcularCredito(apre, pecas)
+            creditos+=this.calcularCredito(apre)
         }
       
         return creditos
       }
 
-    calcularCredito(apre, pecas) {
+    calcularCredito(apre) {
         let creditos = 0;
         creditos += Math.max(apre.audiencia - 30, 0);
-        if (this.getPeca(apre, pecas).tipo === "comedia") 
+        if (this.repo.getPeca(apre).tipo === "comedia") 
           creditos += Math.floor(apre.audiencia / 5);
         return creditos;   
       }
